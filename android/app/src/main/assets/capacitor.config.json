@@ -1,0 +1,13 @@
+{
+	"appId": "com.phonezip.app",
+	"appName": "PhoneZip",
+	"webDir": "dist/client",
+	"server": {
+		"androidScheme": "https"
+	},
+	"plugins": {
+		"CapacitorHttp": {
+			"enabled": true
+		}
+	}
+}

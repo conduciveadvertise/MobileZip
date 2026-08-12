@@ -1,0 +1,6 @@
+{
+  "name": "PhoneZip",
+  "description": "File compression, archive manager, and local Wi-Fi PC transfer app.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
