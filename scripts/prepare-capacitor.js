@@ -1,9 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 
-const publicDir = path.resolve('dist');
 const distDir = path.resolve('dist');
-const assetsDir = path.join(publicDir, 'assets');
+const clientDir = path.resolve('dist/client');
+const assetsDir = path.join(distDir, 'assets');
 
 if (!fs.existsSync(assetsDir)) {
   console.error('Assets directory not found at', assetsDir);
@@ -19,17 +19,24 @@ if (!mainJs) {
   process.exit(1);
 }
 
-// Ensure logo is in public directory
+// Ensure logo is in dist
 if (fs.existsSync('src/assets/phonezip-logo.png')) {
-  fs.copyFileSync('src/assets/phonezip-logo.png', path.join(publicDir, 'phonezip-logo.png'));
-  console.log('Copied phonezip-logo.png to .output/public');
+  fs.copyFileSync(
+    'src/assets/phonezip-logo.png',
+    path.join(distDir, 'phonezip-logo.png')
+  );
 }
 
 if (fs.existsSync('public/favicon.png')) {
-  fs.copyFileSync('public/favicon.png', path.join(publicDir, 'favicon.png'));
+  fs.copyFileSync(
+    'public/favicon.png',
+    path.join(distDir, 'favicon.png')
+  );
 }
 
-const cssLink = mainCss ? `<link rel="stylesheet" href="/assets/${mainCss}" />` : '';
+const cssLink = mainCss
+  ? `<link rel="stylesheet" href="/assets/${mainCss}" />`
+  : '';
 
 const indexHtml = `<!doctype html>
 <html lang="en">
@@ -57,14 +64,22 @@ const indexHtml = `<!doctype html>
 </html>
 `;
 
-fs.writeFileSync(path.join(publicDir, 'index.html'), indexHtml, 'utf8');
-console.log('Successfully generated index.html in .output/public');
+fs.writeFileSync(path.join(distDir, 'index.html'), indexHtml, 'utf8');
 
-const clientDir = path.resolve('dist/client');
+console.log('Successfully generated index.html in dist');
+
+// Prepare clean Capacitor web directory
+fs.rmSync(clientDir, { recursive: true, force: true });
 fs.mkdirSync(clientDir, { recursive: true });
-fs.cpSync(publicDir, clientDir, { recursive: true });
-console.log('Successfully mirrored .output/public to dist/client');
 
-// Also mirror to dist/ so dist is fully populated as a fallback/standard dist folder
-fs.cpSync(publicDir, distDir, { recursive: true });
-console.log('Successfully mirrored .output/public to dist');
+// Copy dist contents into dist/client, excluding client itself
+for (const entry of fs.readdirSync(distDir)) {
+  if (entry === 'client') continue;
+
+  const src = path.join(distDir, entry);
+  const dest = path.join(clientDir, entry);
+
+  fs.cpSync(src, dest, { recursive: true });
+}
+
+console.log('Successfully prepared dist/client for Capacitor');
