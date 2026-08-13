@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const publicDir = path.resolve('.output/public');
+const publicDir = path.resolve('dist');
 const distDir = path.resolve('dist');
 const assetsDir = path.join(publicDir, 'assets');
 
